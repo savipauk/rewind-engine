@@ -4,6 +4,11 @@
 
 namespace demo_game {
 
+struct PlayerInput {
+  int move_x;
+  int move_y;
+};
+
 struct PlayerState {
   sim::Vec2 position{};
 };

@@ -1,5 +1,6 @@
 add_library(sim STATIC
     src/world.cc
+    src/vec2.cc
 )
 
 target_include_directories(sim

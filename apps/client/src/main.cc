@@ -1,5 +1,5 @@
-#include "backends/imgui_impl_opengl3.h"
 #include "adapters/raylib_adapter.h"
+#include "backends/imgui_impl_opengl3.h"
 #include "demo_game/game_state.h"
 #include "imgui.h"
 #include "raylib.h"
@@ -12,6 +12,9 @@ void imgui_draw(const sim::World& world);
 void imgui_render();
 void imgui_shutdown();
 void render_player(const demo_game::PlayerState& player);
+demo_game::PlayerInput poll_player_input();
+
+sim::Scalar move_speed{1};
 
 int main() {
   const int screen_width = 800;
@@ -35,9 +38,16 @@ int main() {
       accumulator = 0.25;
     }
 
+    const demo_game::PlayerInput input = poll_player_input();
+
     while (accumulator >= sim::kFixedDtSeconds) {
       world.tick();
       accumulator -= sim::kFixedDtSeconds;
+
+      sim::Vec2 direction{input.move_x, input.move_y};
+      direction.normalize();
+      sim::Vec2 movement = direction * move_speed;
+      game_state.player.position += movement;
     }
 
     imgui_poll_io();
@@ -53,7 +63,22 @@ int main() {
 
       render_player(game_state.player);
 
-      imgui_draw(world);
+      // imgui_draw(world);
+      // ImGui draw
+      {
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("Debug");
+        ImGui::Text("tick: %llu",
+                    static_cast<unsigned long long>(world.tick_count()));
+        ImGui::Text("fps: %d", GetFPS());
+        ImGui::Text("frame dt: %.6f", GetFrameTime());
+        ImGui::Text("tick rate: %u", sim::kTickRate);
+        ImGui::Text("move_x: %d", input.move_x);
+        ImGui::Text("move_y: %d", input.move_y);
+        ImGui::End();
+      }
 
       imgui_render();
     }
@@ -65,6 +90,26 @@ int main() {
   CloseWindow();
 
   return 0;
+}
+
+demo_game::PlayerInput poll_player_input() {
+  demo_game::PlayerInput input{};
+
+  if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) {
+    input.move_x += 1;
+  }
+  if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) {
+    input.move_x -= 1;
+  }
+
+  if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) {
+    input.move_y += 1;
+  }
+  if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)) {
+    input.move_y -= 1;
+  }
+
+  return input;
 }
 
 void render_player(const demo_game::PlayerState& player) {
