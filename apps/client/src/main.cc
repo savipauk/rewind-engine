@@ -3,6 +3,7 @@
 #include "demo_game/game_state.h"
 #include "imgui.h"
 #include "raylib.h"
+#include "rlgl.h"
 #include "sim/tick.h"
 #include "sim/world.h"
 
@@ -11,10 +12,11 @@ void imgui_poll_io();
 void imgui_draw(const sim::World& world);
 void imgui_render();
 void imgui_shutdown();
-void render_player(const demo_game::PlayerState& player);
+void render_player(const demo_game::Player& player);
 demo_game::PlayerInput poll_player_input();
 
-sim::Scalar move_speed{1};
+float move_speed_f = 1;
+sim::Scalar move_speed{move_speed_f};
 
 int main() {
   const int screen_width = 800;
@@ -29,7 +31,7 @@ int main() {
 
   SetTargetFPS(60);
 
-  demo_game::GameState game_state{};
+  demo_game::Game game_state{};
   game_state.player.position = sim::Vec2(screen_width / 2, screen_height / 2);
 
   while (!WindowShouldClose()) {
@@ -55,13 +57,14 @@ int main() {
     BeginDrawing();
     {
       ClearBackground(RAYWHITE);
+
+      render_player(game_state.player);
+
       DrawText(TextFormat("World Tick Count: %llu",
                           static_cast<unsigned long long>(world.tick_count())),
                20, 20, 20, BLACK);
       DrawText(TextFormat("FPS: %i", GetFPS()), 20, 40, 20, BLACK);
       DrawText(TextFormat("Delta Time: %f", GetFrameTime()), 20, 60, 20, BLACK);
-
-      render_player(game_state.player);
 
       // imgui_draw(world);
       // ImGui draw
@@ -77,9 +80,13 @@ int main() {
         ImGui::Text("tick rate: %u", sim::kTickRate);
         ImGui::Text("move_x: %d", input.move_x);
         ImGui::Text("move_y: %d", input.move_y);
+        ImGui::Text("Move speed:");
+        if (ImGui::SliderFloat("##", &move_speed_f, 0.5, 5)) {
+          move_speed = sim::Scalar(move_speed_f);
+        }
         ImGui::End();
       }
-
+      rlDrawRenderBatchActive();
       imgui_render();
     }
     EndDrawing();
@@ -112,7 +119,7 @@ demo_game::PlayerInput poll_player_input() {
   return input;
 }
 
-void render_player(const demo_game::PlayerState& player) {
+void render_player(const demo_game::Player& player) {
   DrawCircleV(client::adapters::to_vector2(player.position), 32, BLUE);
 }
 

@@ -1,5 +1,5 @@
 add_library(demo_game STATIC
-    src/game_mode.cc
+    src/game_state.cc
 )
 
 target_include_directories(demo_game

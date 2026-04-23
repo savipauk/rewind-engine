@@ -9,12 +9,16 @@ struct PlayerInput {
   int move_y;
 };
 
-struct PlayerState {
+struct Player {
   sim::Vec2 position{};
+
+  void process_input();
+  void update();
+  void render();
 };
 
-struct GameState {
-  PlayerState player{};
+struct Game {
+  Player player{};
 };
 
 }  // namespace demo_game

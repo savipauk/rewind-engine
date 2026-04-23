@@ -14,11 +14,11 @@ include(cmake/warnings.cmake)
 
 add_subdirectory(external)
 
-add_subdirectory(libs/common)
-add_subdirectory(libs/sim)
-add_subdirectory(libs/net)
-add_subdirectory(libs/replay)
-add_subdirectory(libs/demo_game)
+add_subdirectory(core/common)
+add_subdirectory(core/sim)
+add_subdirectory(core/net)
+add_subdirectory(core/replay)
+add_subdirectory(core/demo_game)
 
 add_subdirectory(apps/server)
 add_subdirectory(apps/client)

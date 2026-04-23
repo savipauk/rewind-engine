@@ -27,11 +27,11 @@ The repository is still in an early bootstrap state. Some sections below describ
 
 The project is organized around reusable engine modules first:
 
-- `libs/common` - shared utilities, logging, buffers, hashes, and low-level helpers
-- `libs/sim` - deterministic world state, fixed-tick stepping, snapshots, rollback helpers, state hashing
-- `libs/net` - UDP transport, packet headers, ack/sequence handling, resend logic, network simulation
-- `libs/replay` - replay logging, input timeline storage, checkpoints, playback and seeking
-- `libs/demo_game` - minimal arena rules and other game-specific logic
+- `core/common` - shared utilities, logging, buffers, hashes, and low-level helpers
+- `core/sim` - deterministic world state, fixed-tick stepping, snapshots, rollback helpers, state hashing
+- `core/net` - UDP transport, packet headers, ack/sequence handling, resend logic, network simulation
+- `core/replay` - replay logging, input timeline storage, checkpoints, playback and seeking
+- `core/demo_game` - minimal arena rules and other game-specific logic
 - `apps/server` - headless authoritative runtime
 - `apps/client` - rendering, input capture, prediction, rollback orchestration, debug overlays
 - `tests` - smoke, module, and integration coverage
