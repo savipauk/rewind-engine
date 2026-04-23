@@ -27,7 +27,8 @@ int main() {
   SetTargetFPS(60);
 
   demo_game::Game game = demo_game::make_initial_game(
-      sim::Vec2(screen_width / 2, screen_height / 2));
+      sim::Vec2(screen_width / 2, screen_height / 2), screen_width,
+      screen_height);
 
   float move_speed_ui = game.player.move_speed.to_float();
 

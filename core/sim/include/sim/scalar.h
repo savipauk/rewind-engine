@@ -56,6 +56,10 @@ struct Scalar {
     return scalar;
   }
 
+  int to_int() const {
+    return static_cast<int>(value) / static_cast<int>(kScalarScale);
+  }
+
   float to_float() const {
     return static_cast<float>(value) / static_cast<float>(kScalarScale);
   }

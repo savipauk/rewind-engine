@@ -2,9 +2,21 @@
 
 namespace demo_game {
 
-Game make_initial_game(const sim::Vec2& player_start_position) {
+Game make_initial_game(const sim::Vec2& player_start_position, int screen_width,
+                       int screen_height) {
   Game game{};
-  game.player.position = player_start_position;
+  game.screen_width = screen_width;
+  game.screen_height = screen_height;
+  game.player.shape.position = player_start_position;
+
+  int boundary_size = 16;
+  game.walls.emplace_back(0, screen_height - boundary_size, screen_width,
+                          boundary_size);
+  game.walls.emplace_back(0, 0, screen_width, boundary_size);
+  game.walls.emplace_back(0, 0, boundary_size, screen_height);
+  game.walls.emplace_back(screen_width - boundary_size, 0, boundary_size,
+                          screen_height);
+
   return game;
 }
 
@@ -18,7 +30,7 @@ void step(Game& game, const PlayerInput& input) {
   sim::Vec2 direction{input.move_x, input.move_y};
   direction.normalize();
   const sim::Vec2 movement = direction * p.move_speed;
-  p.position += movement;
+  p.shape.position += movement;
 }
 
 }  // namespace demo_game
