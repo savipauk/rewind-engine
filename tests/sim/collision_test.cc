@@ -68,6 +68,31 @@ void test_circle_rect_contact() {
   assert(!separate.hit);
 }
 
+void test_circle_rect_contact_center_inside() {
+  const sim::Rect r{sim::Vec2{0, 0}, sim::Vec2{10, 10}};
+
+  const sim::Contact near_left =
+      sim::contact(sim::Circle{sim::Vec2{1, 5}, sim::Scalar{2}}, r);
+  assert(near_left.hit);
+  assert_vec2_raw(near_left.normal, 1, 0);
+  assert_scalar_raw(near_left.penetration, 3);
+  assert_vec2_raw(near_left.point, 0, 5);
+
+  const sim::Contact near_right =
+      sim::contact(sim::Circle{sim::Vec2{9, 5}, sim::Scalar{2}}, r);
+  assert(near_right.hit);
+  assert_vec2_raw(near_right.normal, -1, 0);
+  assert_scalar_raw(near_right.penetration, 3);
+  assert_vec2_raw(near_right.point, 10, 5);
+
+  const sim::Contact near_top =
+      sim::contact(sim::Circle{sim::Vec2{5, 1}, sim::Scalar{2}}, r);
+  assert(near_top.hit);
+  assert_vec2_raw(near_top.normal, 0, 1);
+  assert_scalar_raw(near_top.penetration, 3);
+  assert_vec2_raw(near_top.point, 5, 0);
+}
+
 void test_rect_rect_intersects() {
   const sim::Rect a{sim::Vec2{0, 0}, sim::Vec2{10, 10}};
 
@@ -100,6 +125,7 @@ int main() {
   test_circle_circle_contact();
   test_circle_rect_intersects();
   test_circle_rect_contact();
+  test_circle_rect_contact_center_inside();
   test_rect_rect_intersects();
   test_rect_rect_contact();
   return 0;

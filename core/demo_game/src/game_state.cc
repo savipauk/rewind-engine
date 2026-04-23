@@ -31,15 +31,33 @@ void step(Game& game, const PlayerInput& input) {
 
   sim::Vec2 direction{input.move_x, input.move_y};
   direction.normalize();
-  const sim::Vec2 movement = direction * p.move_speed;
-  sim::Vec2 old_pos = p.shape.position;
-  p.shape.position += movement;
-  for (const auto& w : game.walls) {
-    if (sim::contact(p.shape, w.shape).hit) {
-      p.shape.position = old_pos;
-      break;
+  const sim::Vec2 delta = direction * p.move_speed;
+
+  sim::Circle candidate = p.shape;
+
+  if (delta.x.value != 0) {
+    candidate.position.x += delta.x;
+    for (const auto& wall : game.walls) {
+      const sim::Contact c = sim::contact(candidate, wall.shape);
+      if (!c.hit || c.normal.x.value == 0) {
+        continue;
+      }
+      candidate.position.x -= c.normal.x * c.penetration;
     }
   }
+
+  if (delta.y.value != 0) {
+    candidate.position.y += delta.y;
+    for (const auto& wall : game.walls) {
+      const sim::Contact c = sim::contact(candidate, wall.shape);
+      if (!c.hit || c.normal.y.value == 0) {
+        continue;
+      }
+      candidate.position.y -= c.normal.y * c.penetration;
+    }
+  }
+
+  p.shape.position = candidate.position;
 }
 
 }  // namespace demo_game

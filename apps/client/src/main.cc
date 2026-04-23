@@ -75,6 +75,8 @@ int main() {
         ImGui::Text("tick rate: %u", sim::kTickRate);
         ImGui::Text("move_x: %d", input.move_x);
         ImGui::Text("move_y: %d", input.move_y);
+        ImGui::Text("pos: %d %d", game.player.shape.position.x.to_int(),
+                    game.player.shape.position.y.to_int());
         ImGui::Text("Move speed:");
         if (ImGui::SliderFloat("##", &move_speed_ui, 0.5f, 5.0f)) {
           demo_game::set_player_move_speed(game, sim::Scalar(move_speed_ui));

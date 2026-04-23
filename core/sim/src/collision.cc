@@ -103,14 +103,65 @@ Contact contact(Circle c, Rect r) {
   const std::int64_t closest_y =
       clamp_raw(c.position.y.value, r.min.y.value, r.max.y.value);
 
+  const std::int64_t dx = c.position.x.value - closest_x;
+  const std::int64_t dy = c.position.y.value - closest_y;
+  const std::int64_t distance_sq = dx * dx + dy * dy;
+
   const Vec2 closest_point =
       Vec2{Scalar::from_raw(closest_x), Scalar::from_raw(closest_y)};
-  const Vec2 direction = closest_point - c.position;
-  result.normal = normalized_direction_or_default(direction, Vec2{1, 0});
 
-  const Scalar distance = distance_between(c.position, closest_point);
-  result.penetration = c.radius - distance;
-  result.point = closest_point;
+  if (distance_sq > 0) {
+    const Vec2 direction = closest_point - c.position;
+    result.normal = normalized_direction_or_default(direction, Vec2{1, 0});
+
+    const Scalar distance = distance_between(c.position, closest_point);
+    result.penetration = c.radius - distance;
+    result.point = closest_point;
+    return result;
+  }
+
+  const Scalar left = c.position.x - r.min.x;
+  const Scalar right = r.max.x - c.position.x;
+  const Scalar top = c.position.y - r.min.y;
+  const Scalar bottom = r.max.y - c.position.y;
+
+  Scalar nearest_face = left;
+  enum class Face { Left, Right, Top, Bottom };
+  Face face = Face::Left;
+
+  if (right.value < nearest_face.value) {
+    nearest_face = right;
+    face = Face::Right;
+  }
+  if (top.value < nearest_face.value) {
+    nearest_face = top;
+    face = Face::Top;
+  }
+  if (bottom.value < nearest_face.value) {
+    nearest_face = bottom;
+    face = Face::Bottom;
+  }
+
+  result.penetration = c.radius + nearest_face;
+  switch (face) {
+    case Face::Left:
+      result.normal = Vec2{1, 0};
+      result.point = Vec2{r.min.x, c.position.y};
+      break;
+    case Face::Right:
+      result.normal = Vec2{-1, 0};
+      result.point = Vec2{r.max.x, c.position.y};
+      break;
+    case Face::Top:
+      result.normal = Vec2{0, 1};
+      result.point = Vec2{c.position.x, r.min.y};
+      break;
+    case Face::Bottom:
+      result.normal = Vec2{0, -1};
+      result.point = Vec2{c.position.x, r.max.y};
+      break;
+  }
+
   return result;
 }
 
