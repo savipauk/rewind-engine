@@ -1,5 +1,6 @@
 add_executable(client
     src/adapters/raylib_adapter.cc
+    src/client_systems.cc
     src/main.cc
 )
 

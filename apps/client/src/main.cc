@@ -1,5 +1,5 @@
-#include "adapters/raylib_adapter.h"
 #include "backends/imgui_impl_opengl3.h"
+#include "client_systems.h"
 #include "demo_game/game_state.h"
 #include "imgui.h"
 #include "raylib.h"
@@ -12,15 +12,10 @@ void imgui_poll_io();
 void imgui_draw(const sim::World& world);
 void imgui_render();
 void imgui_shutdown();
-void render_player(const demo_game::Player& player);
-demo_game::PlayerInput poll_player_input();
-
-float move_speed_f = 1;
-sim::Scalar move_speed{move_speed_f};
 
 int main() {
-  const int screen_width = 800;
-  const int screen_height = 450;
+  const int screen_width = 1280;
+  const int screen_height = 720;
 
   sim::World world;
   double accumulator = 0.0;
@@ -31,8 +26,10 @@ int main() {
 
   SetTargetFPS(60);
 
-  demo_game::Game game_state{};
-  game_state.player.position = sim::Vec2(screen_width / 2, screen_height / 2);
+  demo_game::Game game = demo_game::make_initial_game(
+      sim::Vec2(screen_width / 2, screen_height / 2));
+
+  float move_speed_ui = game.player.move_speed.to_float();
 
   while (!WindowShouldClose()) {
     accumulator += static_cast<double>(GetFrameTime());
@@ -40,16 +37,13 @@ int main() {
       accumulator = 0.25;
     }
 
-    const demo_game::PlayerInput input = poll_player_input();
+    const demo_game::PlayerInput input = client::poll_player_input();
 
     while (accumulator >= sim::kFixedDtSeconds) {
       world.tick();
       accumulator -= sim::kFixedDtSeconds;
 
-      sim::Vec2 direction{input.move_x, input.move_y};
-      direction.normalize();
-      sim::Vec2 movement = direction * move_speed;
-      game_state.player.position += movement;
+      demo_game::step(game, input);
     }
 
     imgui_poll_io();
@@ -58,7 +52,7 @@ int main() {
     {
       ClearBackground(RAYWHITE);
 
-      render_player(game_state.player);
+      client::render_game(game);
 
       DrawText(TextFormat("World Tick Count: %llu",
                           static_cast<unsigned long long>(world.tick_count())),
@@ -81,8 +75,8 @@ int main() {
         ImGui::Text("move_x: %d", input.move_x);
         ImGui::Text("move_y: %d", input.move_y);
         ImGui::Text("Move speed:");
-        if (ImGui::SliderFloat("##", &move_speed_f, 0.5, 5)) {
-          move_speed = sim::Scalar(move_speed_f);
+        if (ImGui::SliderFloat("##", &move_speed_ui, 0.5f, 5.0f)) {
+          demo_game::set_player_move_speed(game, sim::Scalar(move_speed_ui));
         }
         ImGui::End();
       }
@@ -97,30 +91,6 @@ int main() {
   CloseWindow();
 
   return 0;
-}
-
-demo_game::PlayerInput poll_player_input() {
-  demo_game::PlayerInput input{};
-
-  if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) {
-    input.move_x += 1;
-  }
-  if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) {
-    input.move_x -= 1;
-  }
-
-  if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) {
-    input.move_y += 1;
-  }
-  if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)) {
-    input.move_y -= 1;
-  }
-
-  return input;
-}
-
-void render_player(const demo_game::Player& player) {
-  DrawCircleV(client::adapters::to_vector2(player.position), 32, BLUE);
 }
 
 void imgui_setup() {
