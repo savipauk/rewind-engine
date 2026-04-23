@@ -1,4 +1,6 @@
 add_library(sim STATIC
+    src/scalar.cc
+    src/collision.cc
     src/world.cc
     src/vec2.cc
 )

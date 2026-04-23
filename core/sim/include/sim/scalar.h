@@ -6,6 +6,9 @@ namespace sim {
 
 inline constexpr std::int64_t kScalarScale = 1000;
 
+std::int64_t integer_sqrt_same_platform(std::int64_t value);
+std::int64_t integer_sqrt(std::int64_t value);
+
 struct Scalar {
   std::int64_t value{0};
 

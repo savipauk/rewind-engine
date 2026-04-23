@@ -1,5 +1,7 @@
 #include "demo_game/game_state.h"
 
+#include "sim/collision.h"
+
 namespace demo_game {
 
 Game make_initial_game(const sim::Vec2& player_start_position, int screen_width,
@@ -30,7 +32,14 @@ void step(Game& game, const PlayerInput& input) {
   sim::Vec2 direction{input.move_x, input.move_y};
   direction.normalize();
   const sim::Vec2 movement = direction * p.move_speed;
+  sim::Vec2 old_pos = p.shape.position;
   p.shape.position += movement;
+  for (const auto& w : game.walls) {
+    if (sim::contact(p.shape, w.shape).hit) {
+      p.shape.position = old_pos;
+      break;
+    }
+  }
 }
 
 }  // namespace demo_game

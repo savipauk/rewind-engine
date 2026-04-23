@@ -10,9 +10,9 @@ struct Contact {
   Vec2 point;
 };
 
-bool intercepts(Circle a, Circle b);
-bool intercepts(Circle c, Rect r);
-bool intercepts(Rect a, Rect b);
+bool intersects(Circle a, Circle b);
+bool intersects(Circle c, Rect r);
+bool intersects(Rect a, Rect b);
 
 Contact contact(Circle a, Circle b);
 Contact contact(Circle c, Rect r);
