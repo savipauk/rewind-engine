@@ -4,7 +4,7 @@
 
 The focus of the project is the engine and protocol work: deterministic simulation, rollback/resimulation, replay, and custom UDP reliability. The demo game exists to visualize and stress the system, not to grow into a feature-rich game.
 
-The repository is still in an early bootstrap state. Some sections below describe the intended architecture and dependency stack, and should be updated as implementation lands.
+The repository is still in active development. Some sections below describe target architecture and planned milestones, while implemented pieces are called out explicitly.
 
 ## Goals
 
@@ -23,7 +23,7 @@ The repository is still in an early bootstrap state. Some sections below describ
 - Asset pipelines, matchmaking, cosmetics, anti-cheat, or large-scale product systems
 - Over-generalizing the engine for hypothetical future use cases
 
-## Planned Architecture
+## Architecture
 
 The project is organized around reusable engine modules first:
 
@@ -38,37 +38,33 @@ The project is organized around reusable engine modules first:
 
 Current bootstrap status:
 
-- Root CMake project exists
-- `client` and `server` targets build
-- a small smoke test exists
-- the core engine systems are not implemented yet
+- Root CMake project and presets exist (`debug`, `release`)
+- `client` builds and runs a raylib + ImGui demo loop (rendering, input polling, fixed-tick stepping)
+- `server` builds and currently prints `server bootstrap`
+- Core modules are scaffolded and partially implemented (`common`, `sim`, `net`, `replay`, `demo_game`)
+- Test coverage currently includes smoke and simulation collision tests
 
-## Intended Tech Stack
+## Tech Stack
 
-The current target stack is:
+The current stack is:
 
 - C++23
 - CMake + Ninja
-- standalone Asio for networking
-- raylib for the client window, rendering, and input
-- Dear ImGui for debug UI and metrics overlays
-- MessagePack or custom binary formats for replay/config serialization where appropriate
+- raylib for the client window, rendering, and input (vendored under `external/raylib`)
+- Dear ImGui for debug UI and metrics overlays (vendored under `external/imgui`)
+- standalone Asio for networking (planned integration)
+- MessagePack or custom binary formats for replay/config serialization where appropriate (planned)
 
-Note: dependency integration is still in progress. The repository structure is being prepared ahead of the full implementation.
+Note: dependencies required by the current client build are already wired into CMake via vendored sources.
 
 ## Getting Started
 
-Expected prerequisites for the full project:
+Prerequisites:
 
 - CMake 3.28+
 - Ninja
 - a C++23 compiler
-- Asio
-- raylib
-- Dear ImGui
-- MessagePack
-
-At the moment, not all external dependencies are wired into the build yet. The current bootstrap can still be configured and built with the existing CMake presets.
+- Xcode command line tools on macOS (or equivalent platform toolchain/OpenGL dependencies)
 
 Configure and build a debug build:
 
@@ -83,10 +79,17 @@ Run tests:
 ctest --preset debug
 ```
 
-Current bootstrap executables print placeholder output:
+Run executables from a debug build:
 
-- `client`
-- `server`
+```bash
+./build/debug/apps/client/client
+./build/debug/apps/server/server
+```
+
+Current runtime behavior:
+
+- `client` opens the demo window and runs the fixed-tick simulation/render loop with a small ImGui debug panel
+- `server` currently prints `server bootstrap`
 
 ## Roadmap
 
@@ -97,11 +100,6 @@ Implementation is expected to progress in this order:
 3. Lockstep baseline
 4. Rollback and resimulation
 5. Replay, experiments, and evaluation support
-
-Immediate next step:
-
-- bootstrap a minimal raylib hello-world in `apps/client`
-- begin the deterministic simulation foundation in parallel
 
 ## Status
 
