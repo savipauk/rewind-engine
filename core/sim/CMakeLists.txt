@@ -3,6 +3,7 @@ add_library(sim STATIC
     src/collision.cc
     src/world.cc
     src/vec2.cc
+    src/snapshot.cc
 )
 
 target_include_directories(sim

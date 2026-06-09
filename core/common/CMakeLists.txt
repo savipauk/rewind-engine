@@ -1,5 +1,6 @@
 add_library(common STATIC
     src/log.cc
+    src/byte_buffer.cc
 )
 
 target_include_directories(common
