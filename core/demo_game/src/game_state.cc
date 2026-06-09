@@ -46,18 +46,20 @@ void step(Game& game, const PlayerInput& input) {
     temp_player.position.y += delta.y;
   }
 
-  for (const auto& wall : game.walls) {
-    const sim::Contact c = sim::contact(temp_player, wall.shape);
-    if (!c.hit) {
-      continue;
-    }
+  if (!delta_x_is_zero || !delta_y_is_zero) {
+    for (const auto& wall : game.walls) {
+      const sim::Contact c = sim::contact(temp_player, wall.shape);
+      if (!c.hit) {
+        continue;
+      }
 
-    if (c.normal.y.value != 0) {
-      temp_player.position.y -= c.normal.y * c.penetration;
-    }
+      if (!delta_x_is_zero && c.normal.x.value != 0) {
+        temp_player.position.x -= c.normal.x * c.penetration;
+      }
 
-    if (c.normal.x.value != 0) {
-      temp_player.position.x -= c.normal.x * c.penetration;
+      if (!delta_y_is_zero && c.normal.y.value != 0) {
+        temp_player.position.y -= c.normal.y * c.penetration;
+      }
     }
   }
 
