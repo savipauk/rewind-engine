@@ -28,22 +28,18 @@ void step(Game& game, const PlayerInput& input) {
   Player& p = game.player;
 
   sim::Vec2 move_direction{input.move_x, input.move_y};
-  move_direction.normalize();
 
   p.velocity.y += p.gravity;
 
   auto accel = p.air_acceleration;
-  auto fric = p.air_friction;
   auto drag = p.horizontal_drag;
 
   if (p.grounded) {
     accel = p.ground_acceleration;
-    fric = p.ground_friction;
-    drag = p.horizontal_drag;
   }
 
   p.velocity += move_direction * accel;
-  p.velocity *= fric;
+
   p.velocity.x *= drag;
 
   if (p.hits_head && p.velocity.y < 0) {
@@ -53,7 +49,7 @@ void step(Game& game, const PlayerInput& input) {
   p.velocity.x = std::clamp(p.velocity.x, p.max_horizontal_speed * -1,
                             p.max_horizontal_speed);
   p.velocity.y =
-      std::clamp(p.velocity.y, p.max_fall_speed * -1, p.max_fall_speed);
+      std::clamp(p.velocity.y, p.max_vertical_speed * -1, p.max_vertical_speed);
 
   sim::Vec2 move_delta = p.velocity;
 
@@ -81,14 +77,25 @@ void step(Game& game, const PlayerInput& input) {
 
       if (!delta_x_is_zero && c.normal.x.value != 0) {
         temp_player.position.x -= c.normal.x * c.penetration;
+
+        if (c.normal.x != 0) {
+          p.velocity.x = 0;
+        }
       }
 
       if (!delta_y_is_zero && c.normal.y.value != 0) {
         if (c.normal.y > 0) {
           grounded = true;
+          if (p.velocity.y > 0) {
+            p.velocity.y = 0;
+          }
         }
+
         if (c.normal.y < 0) {
           hits_head = true;
+          if (p.velocity.y > 0) {
+            p.velocity.y = 0;
+          }
         }
         temp_player.position.y -= c.normal.y * c.penetration;
       }

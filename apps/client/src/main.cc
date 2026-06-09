@@ -35,7 +35,7 @@ int main() {
   float air_friction = game.player.air_friction.to_float();
   float ground_friction = game.player.ground_friction.to_float();
   float horizontal_drag = game.player.horizontal_drag.to_float();
-  float max_fall_speed = game.player.max_fall_speed.to_float();
+  float max_vertical_speed = game.player.max_vertical_speed.to_float();
   float max_horizontal_speed = game.player.max_horizontal_speed.to_float();
 
   while (!WindowShouldClose()) {
@@ -120,14 +120,14 @@ int main() {
                              sim::Scalar(horizontal_drag));
         }
 
-        ImGui::Text("max_f_s: ");
-        if (ImGui::SliderFloat("max_f_s", &max_fall_speed, 8.0f, 25.0f)) {
-          demo_game::set_var(&game.player.max_fall_speed,
-                             sim::Scalar(max_fall_speed));
+        ImGui::Text("max_v_s: ");
+        if (ImGui::SliderFloat("max_v_s", &max_vertical_speed, 4.0f, 25.0f)) {
+          demo_game::set_var(&game.player.max_vertical_speed,
+                             sim::Scalar(max_vertical_speed));
         }
 
         ImGui::Text("max_h_s: ");
-        if (ImGui::SliderFloat("max_h_s", &max_horizontal_speed, 6.0f, 15.0f)) {
+        if (ImGui::SliderFloat("max_h_s", &max_horizontal_speed, 4.0f, 15.0f)) {
           demo_game::set_var(&game.player.max_horizontal_speed,
                              sim::Scalar(max_horizontal_speed));
         }
