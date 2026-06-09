@@ -100,4 +100,8 @@ void step(Game& game, const PlayerInput& input) {
   p.shape.position = temp_player.position;
 }
 
+void set_var(sim::Scalar* value, sim::Scalar new_value) {
+  *value = new_value;
+}
+
 }  // namespace demo_game

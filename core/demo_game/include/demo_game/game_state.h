@@ -20,6 +20,17 @@ struct Player {
   bool grounded{true};
   bool hits_head{false};
 
+  /*
+     Playtesting idea values
+     0.45
+     0.92
+     1.34
+     0.99
+     0.67
+     1.0
+     8
+     7
+  */
   sim::Scalar gravity{0.09};
   sim::Scalar air_acceleration{0.7};
   sim::Scalar ground_acceleration{1};
@@ -27,7 +38,7 @@ struct Player {
   sim::Scalar ground_friction{0.85};
   sim::Scalar horizontal_drag{0.96};
 
-  sim::Scalar max_fall_speed{10};
+  sim::Scalar max_vertical_speed{10};
   sim::Scalar max_horizontal_speed{8};
 };
 
@@ -51,5 +62,7 @@ struct Game {
 Game make_initial_game(const sim::Vec2& player_start_position, int screen_width,
                        int screen_height);
 void step(Game& game, const PlayerInput& input);
+
+void set_var(sim::Scalar* value, sim::Scalar new_value);
 
 }  // namespace demo_game

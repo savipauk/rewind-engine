@@ -29,6 +29,15 @@ int main() {
       sim::Vec2(screen_width / 2, screen_height / 2), screen_width,
       screen_height);
 
+  float gravity = game.player.gravity.to_float();
+  float air_acceleration = game.player.air_acceleration.to_float();
+  float ground_acceleration = game.player.ground_acceleration.to_float();
+  float air_friction = game.player.air_friction.to_float();
+  float ground_friction = game.player.ground_friction.to_float();
+  float horizontal_drag = game.player.horizontal_drag.to_float();
+  float max_fall_speed = game.player.max_fall_speed.to_float();
+  float max_horizontal_speed = game.player.max_horizontal_speed.to_float();
+
   while (!WindowShouldClose()) {
     accumulator += static_cast<double>(GetFrameTime());
     if (accumulator > 0.25) {
@@ -75,6 +84,53 @@ int main() {
         ImGui::Text("pos: %d %d", game.player.shape.position.x.to_int(),
                     game.player.shape.position.y.to_int());
         ImGui::End();
+
+        ImGui::Text("gravity: ");
+        if (ImGui::SliderFloat("gravity", &gravity, 0.0f, 2.0f)) {
+          demo_game::set_var(&game.player.gravity, sim::Scalar(gravity));
+        }
+
+        ImGui::Text("air_accel: ");
+        if (ImGui::SliderFloat("air_accel", &air_acceleration, 0.1f, 5.0f)) {
+          demo_game::set_var(&game.player.air_acceleration,
+                             sim::Scalar(air_acceleration));
+        }
+
+        ImGui::Text("gnd_accel: ");
+        if (ImGui::SliderFloat("gnd_accel", &ground_acceleration, 0.1f, 5.0f)) {
+          demo_game::set_var(&game.player.ground_acceleration,
+                             sim::Scalar(ground_acceleration));
+        }
+
+        ImGui::Text("air_fric: ");
+        if (ImGui::SliderFloat("air_fric", &air_friction, 0.0f, 1.0f)) {
+          demo_game::set_var(&game.player.air_friction,
+                             sim::Scalar(air_friction));
+        }
+
+        ImGui::Text("gnd_fric: ");
+        if (ImGui::SliderFloat("gnd_fric", &ground_friction, 0.0f, 1.0f)) {
+          demo_game::set_var(&game.player.ground_friction,
+                             sim::Scalar(ground_friction));
+        }
+
+        ImGui::Text("hor_drag: ");
+        if (ImGui::SliderFloat("hor_drag", &horizontal_drag, 0.0f, 1.0f)) {
+          demo_game::set_var(&game.player.horizontal_drag,
+                             sim::Scalar(horizontal_drag));
+        }
+
+        ImGui::Text("max_f_s: ");
+        if (ImGui::SliderFloat("max_f_s", &max_fall_speed, 8.0f, 25.0f)) {
+          demo_game::set_var(&game.player.max_fall_speed,
+                             sim::Scalar(max_fall_speed));
+        }
+
+        ImGui::Text("max_h_s: ");
+        if (ImGui::SliderFloat("max_h_s", &max_horizontal_speed, 6.0f, 15.0f)) {
+          demo_game::set_var(&game.player.max_horizontal_speed,
+                             sim::Scalar(max_horizontal_speed));
+        }
       }
       rlDrawRenderBatchActive();
       imgui_render();
