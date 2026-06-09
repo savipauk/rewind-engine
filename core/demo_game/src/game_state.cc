@@ -33,31 +33,35 @@ void step(Game& game, const PlayerInput& input) {
   direction.normalize();
   const sim::Vec2 delta = direction * p.move_speed;
 
-  sim::Circle candidate = p.shape;
+  sim::Circle temp_player = p.shape;
 
-  if (delta.x.value != 0) {
-    candidate.position.x += delta.x;
-    for (const auto& wall : game.walls) {
-      const sim::Contact c = sim::contact(candidate, wall.shape);
-      if (!c.hit || c.normal.x.value == 0) {
-        continue;
-      }
-      candidate.position.x -= c.normal.x * c.penetration;
+  bool delta_x_is_zero = delta.x.value == 0;
+  bool delta_y_is_zero = delta.y.value == 0;
+
+  if (!delta_x_is_zero) {
+    temp_player.position.x += delta.x;
+  }
+
+  if (!delta_y_is_zero) {
+    temp_player.position.y += delta.y;
+  }
+
+  for (const auto& wall : game.walls) {
+    const sim::Contact c = sim::contact(temp_player, wall.shape);
+    if (!c.hit) {
+      continue;
+    }
+
+    if (c.normal.y.value != 0) {
+      temp_player.position.y -= c.normal.y * c.penetration;
+    }
+
+    if (c.normal.x.value != 0) {
+      temp_player.position.x -= c.normal.x * c.penetration;
     }
   }
 
-  if (delta.y.value != 0) {
-    candidate.position.y += delta.y;
-    for (const auto& wall : game.walls) {
-      const sim::Contact c = sim::contact(candidate, wall.shape);
-      if (!c.hit || c.normal.y.value == 0) {
-        continue;
-      }
-      candidate.position.y -= c.normal.y * c.penetration;
-    }
-  }
-
-  p.shape.position = candidate.position;
+  p.shape.position = temp_player.position;
 }
 
 }  // namespace demo_game

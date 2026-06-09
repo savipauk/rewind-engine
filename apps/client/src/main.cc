@@ -9,7 +9,6 @@
 
 void imgui_setup();
 void imgui_poll_io();
-void imgui_draw(const sim::World& world);
 void imgui_render();
 void imgui_shutdown();
 
@@ -24,7 +23,7 @@ int main() {
 
   imgui_setup();
 
-  SetTargetFPS(60);
+  SetTargetFPS(144);
 
   demo_game::Game game = demo_game::make_initial_game(
       sim::Vec2(screen_width / 2, screen_height / 2), screen_width,
@@ -61,7 +60,6 @@ int main() {
       DrawText(TextFormat("FPS: %i", GetFPS()), 20, 40, 20, BLACK);
       DrawText(TextFormat("Delta Time: %f", GetFrameTime()), 20, 60, 20, BLACK);
 
-      // imgui_draw(world);
       // ImGui draw
       {
         ImGui_ImplOpenGL3_NewFrame();
@@ -133,19 +131,6 @@ void imgui_poll_io() {
   for (int c = GetCharPressed(); c > 0; c = GetCharPressed()) {
     io.AddInputCharacter(static_cast<unsigned int>(c));
   }
-}
-
-void imgui_draw(const sim::World& world) {
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui::NewFrame();
-
-  ImGui::Begin("Debug");
-  ImGui::Text("tick: %llu",
-              static_cast<unsigned long long>(world.tick_count()));
-  ImGui::Text("fps: %d", GetFPS());
-  ImGui::Text("frame dt: %.6f", GetFrameTime());
-  ImGui::Text("tick rate: %u", sim::kTickRate);
-  ImGui::End();
 }
 
 void imgui_render() {
