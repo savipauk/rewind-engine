@@ -18,6 +18,13 @@ int main() {
   const sim::Scalar fractional_product = sim::Scalar{0.5} * sim::Scalar{2};
   assert(fractional_product.to_double() == 1.0);
 
+  assert(sim::Scalar{1} == sim::Scalar{1});
+  assert(sim::Scalar{1} != sim::Scalar{2});
+  assert(sim::Scalar{1} < sim::Scalar{2});
+  assert(sim::Scalar{1} <= sim::Scalar{1});
+  assert(sim::Scalar{2} > sim::Scalar{1});
+  assert(sim::Scalar{2} >= sim::Scalar{2});
+
   const sim::Vec2 vec_sum = sim::Vec2{1, 2} + sim::Vec2{3, 4};
   assert(vec_sum.x.to_double() == 4.0);
   assert(vec_sum.y.to_double() == 6.0);
@@ -25,6 +32,12 @@ int main() {
   const sim::Vec2 vec_product = sim::Vec2{1, 2} * sim::Scalar{3};
   assert(vec_product.x.to_double() == 3.0);
   assert(vec_product.y.to_double() == 6.0);
+
+  const sim::Vec2 vec_a{1, 2};
+  const sim::Vec2 vec_b{1, 2};
+  const sim::Vec2 vec_c{2, 1};
+  assert(vec_a == vec_b);
+  assert(vec_a != vec_c);
 
   return 0;
 }

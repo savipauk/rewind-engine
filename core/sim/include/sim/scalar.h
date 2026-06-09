@@ -53,6 +53,30 @@ struct Scalar {
     return Scalar::from_raw((value * rhs.value) / kScalarScale);
   }
 
+  bool operator==(const Scalar& rhs) const {
+    return value == rhs.value;
+  }
+
+  bool operator!=(const Scalar& rhs) const {
+    return value != rhs.value;
+  }
+
+  bool operator<(const Scalar& rhs) const {
+    return value < rhs.value;
+  }
+
+  bool operator<=(const Scalar& rhs) const {
+    return value <= rhs.value;
+  }
+
+  bool operator>(const Scalar& rhs) const {
+    return value > rhs.value;
+  }
+
+  bool operator>=(const Scalar& rhs) const {
+    return value >= rhs.value;
+  }
+
   static Scalar from_raw(std::int64_t raw_value) {
     Scalar scalar;
     scalar.value = raw_value;

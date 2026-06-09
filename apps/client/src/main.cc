@@ -29,8 +29,6 @@ int main() {
       sim::Vec2(screen_width / 2, screen_height / 2), screen_width,
       screen_height);
 
-  float move_speed_ui = game.player.move_speed.to_float();
-
   while (!WindowShouldClose()) {
     accumulator += static_cast<double>(GetFrameTime());
     if (accumulator > 0.25) {
@@ -71,14 +69,11 @@ int main() {
         ImGui::Text("fps: %d", GetFPS());
         ImGui::Text("frame dt: %.6f", GetFrameTime());
         ImGui::Text("tick rate: %u", sim::kTickRate);
+        ImGui::Text("grounded: %d", game.player.grounded);
         ImGui::Text("move_x: %d", input.move_x);
         ImGui::Text("move_y: %d", input.move_y);
         ImGui::Text("pos: %d %d", game.player.shape.position.x.to_int(),
                     game.player.shape.position.y.to_int());
-        ImGui::Text("Move speed:");
-        if (ImGui::SliderFloat("##", &move_speed_ui, 0.5f, 5.0f)) {
-          demo_game::set_player_move_speed(game, sim::Scalar(move_speed_ui));
-        }
         ImGui::End();
       }
       rlDrawRenderBatchActive();

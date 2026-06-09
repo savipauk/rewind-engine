@@ -57,6 +57,14 @@ struct Vec2 {
     return Vec2{x * scalar, y * scalar};
   }
 
+  bool operator==(const Vec2& rhs) const {
+    return x == rhs.x && y == rhs.y;
+  }
+
+  bool operator!=(const Vec2& rhs) const {
+    return !(*this == rhs);
+  }
+
   Scalar magnitude() const;
   Vec2 normalized() const;
   Vec2& normalize();
