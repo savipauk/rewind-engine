@@ -22,8 +22,8 @@ struct Player {
 
   sim::Scalar gravity{0.09};
 
-  sim::Scalar air_x_accel{0.28};
-  sim::Scalar ground_x_accel{0.28};
+  sim::Scalar air_x_accel{0.2};
+  sim::Scalar ground_x_accel{0.218};
 
   sim::Scalar air_y_accel{0.2};
   sim::Scalar weak_air_y_accel{0.06};

@@ -21,6 +21,11 @@ Game make_initial_game(const sim::Vec2& player_start_position, int screen_width,
   game.walls.emplace_back(screen_width - boundary_size, 0, boundary_size,
                           screen_height);
 
+  game.walls.emplace_back(0, 3 * screen_height / 4, screen_width / 2,
+                          boundary_size);
+  game.walls.emplace_back(0, screen_height / 2, screen_width / 4,
+                          boundary_size);
+
   return game;
 }
 
@@ -53,10 +58,6 @@ void step(Game& game, const PlayerInput& input) {
   p.velocity.x += move_direction.x * x_accel;
 
   p.velocity.x *= drag;
-
-  if (p.hits_head && p.velocity.y < 0) {
-    p.velocity.y = 0;
-  }
 
   p.velocity.x = std::clamp(p.velocity.x, p.max_horizontal_speed * -1,
                             p.max_horizontal_speed);
@@ -106,7 +107,7 @@ void step(Game& game, const PlayerInput& input) {
 
         if (c.normal.y < 0) {
           hits_head = true;
-          if (p.velocity.y > 0) {
+          if (p.velocity.y < 0) {
             p.velocity.y = 0;
           }
         }
