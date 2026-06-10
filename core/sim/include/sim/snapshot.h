@@ -54,10 +54,10 @@ class SnapshotReader {
   }
 
   template <typename T, typename F>
-  bool read_vector(const std::vector<T>& vec, F read_elem) {
+  bool read_vector(std::vector<T>& vec, F read_elem) {
     std::uint32_t size = static_cast<std::uint32_t>(vec.size());
     if (!read_pod(size)) return false;
-    for (const T& elem : vec) {
+    for (T& elem : vec) {
       if (!read_elem(elem)) return false;
     }
     return true;
