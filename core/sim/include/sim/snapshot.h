@@ -25,6 +25,16 @@ class SnapshotWriter {
     return writer_.write_pod(value);
   }
 
+  template <typename T, typename F>
+  bool write_vector(const std::vector<T>& vec, F write_elem) {
+    std::uint32_t size = static_cast<std::uint32_t>(vec.size());
+    if (!write_pod(size)) return false;
+    for (const T& elem : vec) {
+      if (!write_elem(elem)) return false;
+    }
+    return true;
+  }
+
   std::size_t bytes_written() const;
   std::size_t bytes_remaining() const;
 
@@ -41,6 +51,16 @@ class SnapshotReader {
   template <typename T>
   bool read_pod(T& value) {
     return reader_.read_pod(value);
+  }
+
+  template <typename T, typename F>
+  bool read_vector(const std::vector<T>& vec, F read_elem) {
+    std::uint32_t size = static_cast<std::uint32_t>(vec.size());
+    if (!read_pod(size)) return false;
+    for (const T& elem : vec) {
+      if (!read_elem(elem)) return false;
+    }
+    return true;
   }
 
   std::size_t bytes_read() const;

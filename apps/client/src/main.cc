@@ -1,10 +1,14 @@
+#include <print>
+
 #include "backends/imgui_impl_opengl3.h"
 #include "client_systems.h"
 #include "debug_ui.h"
 #include "demo_game/game_state.h"
+#include "demo_game/snapshot.h"
 #include "imgui.h"
 #include "raylib.h"
 #include "rlgl.h"
+#include "sim/snapshot.h"
 #include "sim/tick.h"
 #include "sim/world.h"
 
@@ -30,6 +34,8 @@ int main() {
       sim::Vec2(screen_width / 2, screen_height / 2), screen_width,
       screen_height);
 
+  std::vector<std::byte> snapshot_buffer(4096);
+
   while (!WindowShouldClose()) {
     accumulator += static_cast<double>(GetFrameTime());
     if (accumulator > 0.25) {
@@ -43,6 +49,30 @@ int main() {
       accumulator -= sim::kFixedDtSeconds;
 
       demo_game::step(game, input);
+    }
+
+    if (IsKeyPressed(KEY_R)) {
+      std::println("Writing snapshot...");
+
+      sim::SnapshotWriter writer{std::span<std::byte>(snapshot_buffer)};
+      if (demo_game::write_snapshot(game, writer)) {
+        const std::size_t used = writer.bytes_written();
+        snapshot_buffer.resize(used);
+        std::println("Successfully wrote snapshot.");
+      } else {
+        std::println("Failed to write snapshot");
+      }
+    }
+
+    if (IsKeyPressed(KEY_L)) {
+      std::println("Loading snapshot");
+      sim::SnapshotReader reader{std::span<const std::byte>(snapshot_buffer)};
+
+      if (demo_game::read_snapshot(game, reader)) {
+        std::println("Successfully read snapshot.");
+      } else {
+        std::println("Failed to load snapshot");
+      }
     }
 
     imgui_poll_io();

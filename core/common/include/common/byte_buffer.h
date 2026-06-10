@@ -37,10 +37,11 @@ class ByteReader {
 
   template <typename T>
   bool read_pod(T& value) {
-    static_assert(std::is_trivially_copyable_v<T>);
+    static_assert(std::is_trivially_copyable_v<T>,
+                  "Data structure not trivially copyable.");
 
-    return read_bytes(std::span<std::byte>{
-        reinterpret_cast<std::byte*>(&value), sizeof(T)});
+    return read_bytes(
+        std::span<std::byte>{reinterpret_cast<std::byte*>(&value), sizeof(T)});
   }
 
   std::size_t bytes_read() const;
