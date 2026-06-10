@@ -31,14 +31,26 @@ void step(Game& game, const PlayerInput& input) {
 
   p.velocity.y += p.gravity;
 
-  auto accel = p.air_acceleration;
+  auto x_accel = p.air_x_accel;
+  auto y_accel = p.air_y_accel;
   auto drag = p.horizontal_drag;
 
   if (p.grounded) {
-    accel = p.ground_acceleration;
+    x_accel = p.ground_x_accel;
+    y_accel = p.ground_y_accel;
   }
 
-  p.velocity += move_direction * accel;
+  if (move_direction.y < 0) {
+    if (p.available_air_y_accel > 0) {
+      p.velocity.y += move_direction.y * y_accel;
+      p.available_air_y_accel -= p.available_air_y_accel_loss;
+    } else {
+      p.velocity.y += move_direction.y * p.weak_air_y_accel;
+    }
+  } else {
+    p.velocity.y += move_direction.y * y_accel;
+  }
+  p.velocity.x += move_direction.x * x_accel;
 
   p.velocity.x *= drag;
 
@@ -48,8 +60,8 @@ void step(Game& game, const PlayerInput& input) {
 
   p.velocity.x = std::clamp(p.velocity.x, p.max_horizontal_speed * -1,
                             p.max_horizontal_speed);
-  p.velocity.y =
-      std::clamp(p.velocity.y, p.max_vertical_speed * -1, p.max_vertical_speed);
+  p.velocity.y = std::clamp(p.velocity.y, p.max_vertical_speed * -1,
+                            p.max_vertical_speed_down);
 
   sim::Vec2 move_delta = p.velocity;
 
@@ -86,6 +98,7 @@ void step(Game& game, const PlayerInput& input) {
       if (!delta_y_is_zero && c.normal.y.value != 0) {
         if (c.normal.y > 0) {
           grounded = true;
+          p.available_air_y_accel = p.max_available_air_accel;
           if (p.velocity.y > 0) {
             p.velocity.y = 0;
           }
@@ -105,10 +118,6 @@ void step(Game& game, const PlayerInput& input) {
   }
 
   p.shape.position = temp_player.position;
-}
-
-void set_var(sim::Scalar* value, sim::Scalar new_value) {
-  *value = new_value;
 }
 
 }  // namespace demo_game
