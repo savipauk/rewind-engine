@@ -3,8 +3,11 @@
 #include <thread>
 
 #include "demo_game/game_state.h"
+#include "net/channel.h"
 #include "sim/tick.h"
 #include "sim/world.h"
+
+#define PORT 4000
 
 int main() {
   sim::World world;
@@ -16,10 +19,16 @@ int main() {
   demo_game::Game game = demo_game::construct_serverside(
       sim::Vec2(arena_width / 2, arena_height / 2));
 
+  net::Channel channel;
+  if (!channel.bind(PORT)) {
+    std::println("Failed to bind UDP server socket");
+    return 1;
+  }
+
   bool running = true;
   auto last_time = std::chrono::steady_clock::now();
 
-  std::println("Starting server...");
+  std::println("Starting server at port {}...", PORT);
   while (running) {
     const auto now = std::chrono::steady_clock::now();
     const std::chrono::duration<double> frame_time = now - last_time;
