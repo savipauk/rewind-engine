@@ -121,8 +121,9 @@ void step(Game& game, const PlayerInput& input) {
 
         if (c.normal.y < 0) {
           hits_head = true;
-          if (p.velocity.y < 0) {
-            p.velocity.y = 0;
+          sim::Scalar vn = sim::dot(p.velocity, c.normal);
+          if (vn > 0) {
+            p.velocity -= c.normal * vn;
           }
         }
         temp_player.position.y -= c.normal.y * c.penetration;

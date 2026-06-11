@@ -1,6 +1,7 @@
 #include "demo_game/snapshot.h"
 
 #include "demo_game/game_state.h"
+#include "sim/snapshot.h"
 
 namespace demo_game {
 
@@ -16,6 +17,9 @@ bool write_snapshot(const Game& game, sim::SnapshotWriter& writer) {
   };
 
   if (!writer.write_vector(game.walls, write_wall)) return false;
+
+  sim::Snapshot s;
+  writer.write_bytes(s.bytes);
 
   return true;
 }

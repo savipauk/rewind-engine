@@ -34,7 +34,7 @@ int main() {
       sim::Vec2(screen_width / 2, screen_height / 2), screen_width,
       screen_height);
 
-  std::vector<std::byte> snapshot_buffer(4096);
+  sim::Snapshot snapshot;
 
   while (!WindowShouldClose()) {
     accumulator += static_cast<double>(GetFrameTime());
@@ -54,10 +54,13 @@ int main() {
     if (IsKeyPressed(KEY_R)) {
       std::println("Writing snapshot...");
 
-      sim::SnapshotWriter writer{std::span<std::byte>(snapshot_buffer)};
+      snapshot.tick = world.tick_count();
+      snapshot.bytes.resize(4096);
+
+      sim::SnapshotWriter writer{std::span<std::byte>(snapshot.bytes)};
       if (demo_game::write_snapshot(game, writer)) {
         const std::size_t used = writer.bytes_written();
-        snapshot_buffer.resize(used);
+        snapshot.bytes.resize(used);
         std::println("Successfully wrote snapshot.");
       } else {
         std::println("Failed to write snapshot");
@@ -66,7 +69,7 @@ int main() {
 
     if (IsKeyPressed(KEY_L)) {
       std::println("Loading snapshot");
-      sim::SnapshotReader reader{std::span<const std::byte>(snapshot_buffer)};
+      sim::SnapshotReader reader{std::span<const std::byte>(snapshot.bytes)};
 
       if (demo_game::read_snapshot(game, reader)) {
         std::println("Successfully read snapshot.");

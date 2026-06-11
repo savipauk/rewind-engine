@@ -44,6 +44,7 @@ struct Player {
 struct Wall {
   sim::Rect shape{{}, {}};
   // sim::Scalar bounciness{1};
+  Wall() {};
   Wall(int x, int y, int width, int height) {
     shape.min = {x, y};
     shape.max = {x + width, y + height};

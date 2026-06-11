@@ -2,8 +2,7 @@
 
 namespace sim {
 
-SnapshotWriter::SnapshotWriter(std::span<std::byte> buffer)
-    : writer_(buffer) {}
+SnapshotWriter::SnapshotWriter(std::span<std::byte> buffer) : writer_(buffer) {}
 
 bool SnapshotWriter::write_bytes(std::span<const std::byte> bytes) {
   return writer_.write_bytes(bytes);

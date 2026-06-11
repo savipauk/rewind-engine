@@ -11,7 +11,11 @@ namespace sim {
 
 struct Snapshot {
   std::uint64_t tick{0};
+  std::uint64_t payload_size{0};
+  std::uint64_t flags{0};
+  std::uint64_t kind{0};
   std::vector<std::byte> bytes;
+  std::uint64_t checksum{0};
 };
 
 class SnapshotWriter {
@@ -55,11 +59,13 @@ class SnapshotReader {
 
   template <typename T, typename F>
   bool read_vector(std::vector<T>& vec, F read_elem) {
-    std::uint32_t size = static_cast<std::uint32_t>(vec.size());
+    std::uint32_t size;
     if (!read_pod(size)) return false;
-    for (T& elem : vec) {
+    std::vector<T> temp(size);
+    for (T& elem : temp) {
       if (!read_elem(elem)) return false;
     }
+    vec = std::move(temp);
     return true;
   }
 
