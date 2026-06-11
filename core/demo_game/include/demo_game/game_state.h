@@ -69,6 +69,9 @@ struct Game {
 
 Game make_initial_game(const sim::Vec2& player_start_position, int screen_width,
                        int screen_height);
+
+Game construct_serverside(const sim::Vec2& player_start_position);
+
 void step(Game& game, const PlayerInput& input);
 
 }  // namespace demo_game

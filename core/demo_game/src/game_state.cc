@@ -31,6 +31,32 @@ Game make_initial_game(const sim::Vec2& player_start_position, int screen_width,
   return game;
 }
 
+Game construct_serverside(const sim::Vec2& player_start_position) {
+  Game game{};
+
+  const int arena_width = 1280;
+  const int arena_height = 720;
+
+  game.screen_width = arena_width;
+  game.screen_height = arena_height;
+  game.player.shape.position = player_start_position;
+
+  int boundary_size = 16;
+  game.walls.emplace_back(0, arena_height - boundary_size, arena_width,
+                          boundary_size, 0.75);
+  game.walls.emplace_back(0, 0, arena_width, boundary_size, 0.5);
+  game.walls.emplace_back(0, 0, boundary_size, arena_height, 0.6);
+  game.walls.emplace_back(arena_width - boundary_size, 0, boundary_size,
+                          arena_height, 0.5);
+
+  game.walls.emplace_back(0, 3 * arena_height / 4, arena_width / 2,
+                          boundary_size, 0.5);
+  game.walls.emplace_back(0, arena_height / 2, arena_width / 4,
+                          boundary_size);
+
+  return game;
+}
+
 void step(Game& game, const PlayerInput& input) {
   // Check if grounded
   // Check if hits ground
