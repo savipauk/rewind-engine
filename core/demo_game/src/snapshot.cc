@@ -13,6 +13,7 @@ bool write_snapshot(const Game& game, sim::SnapshotWriter& writer) {
     if (!writer.write_pod(wall.shape.min.y)) return false;
     if (!writer.write_pod(wall.shape.max.x)) return false;
     if (!writer.write_pod(wall.shape.max.y)) return false;
+    if (!writer.write_pod(wall.bounciness)) return false;
     return true;
   };
 
@@ -32,6 +33,7 @@ bool read_snapshot(Game& game, sim::SnapshotReader& reader) {
     if (!reader.read_pod(wall.shape.min.y)) return false;
     if (!reader.read_pod(wall.shape.max.x)) return false;
     if (!reader.read_pod(wall.shape.max.y)) return false;
+    if (!reader.read_pod(wall.bounciness)) return false;
     return true;
   };
 

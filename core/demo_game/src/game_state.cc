@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <print>
 
 #include "sim/collision.h"
 #include "sim/vec2.h"
@@ -18,14 +17,14 @@ Game make_initial_game(const sim::Vec2& player_start_position, int screen_width,
 
   int boundary_size = 16;
   game.walls.emplace_back(0, screen_height - boundary_size, screen_width,
-                          boundary_size);
-  game.walls.emplace_back(0, 0, screen_width, boundary_size);
-  game.walls.emplace_back(0, 0, boundary_size, screen_height);
+                          boundary_size, 0.75);
+  game.walls.emplace_back(0, 0, screen_width, boundary_size, 0.5);
+  game.walls.emplace_back(0, 0, boundary_size, screen_height, 0.6);
   game.walls.emplace_back(screen_width - boundary_size, 0, boundary_size,
-                          screen_height);
+                          screen_height, 0.5);
 
   game.walls.emplace_back(0, 3 * screen_height / 4, screen_width / 2,
-                          boundary_size);
+                          boundary_size, 0.5);
   game.walls.emplace_back(0, screen_height / 2, screen_width / 4,
                           boundary_size);
 
@@ -49,12 +48,15 @@ void step(Game& game, const PlayerInput& input) {
   if (p.grounded) {
     x_accel = p.ground_x_accel;
     y_accel = p.ground_y_accel;
+  } else {
+    if (p.available_air_y_accel > 0) {
+      p.available_air_y_accel -= p.available_air_y_accel_loss;
+    }
   }
 
   if (move_direction.y < 0) {
     if (p.available_air_y_accel > 0) {
       p.velocity.y += move_direction.y * y_accel;
-      p.available_air_y_accel -= p.available_air_y_accel_loss;
     } else {
       p.velocity.y += move_direction.y * p.weak_air_y_accel;
     }
@@ -88,6 +90,7 @@ void step(Game& game, const PlayerInput& input) {
   if (!delta_x_is_zero || !delta_y_is_zero) {
     bool grounded = false;
     bool hits_head = false;
+
     for (const auto& wall : game.walls) {
       const sim::Contact c = sim::contact(temp_player, wall.shape);
       if (!c.hit) {
@@ -104,15 +107,8 @@ void step(Game& game, const PlayerInput& input) {
       }
 
       if (!delta_y_is_zero && c.normal.y.value != 0) {
-        std::println("cos(c.normal.y) {}\tcos(p.max_slope_angle) {}",
-                     std::cos(c.normal.y.to_double()),
-                     std::cos(p.max_slope_angle.to_double()));
         if (c.normal.y > 0) {
           grounded = true;
-          sim::Scalar vn = sim::dot(p.velocity, c.normal);
-          if (vn > 0) {
-            p.velocity -= c.normal * vn;
-          }
         }
 
         if (c.normal.y > std::cos(p.max_slope_angle.to_double())) {
@@ -121,12 +117,13 @@ void step(Game& game, const PlayerInput& input) {
 
         if (c.normal.y < 0) {
           hits_head = true;
-          sim::Scalar vn = sim::dot(p.velocity, c.normal);
-          if (vn > 0) {
-            p.velocity -= c.normal * vn;
-          }
         }
         temp_player.position.y -= c.normal.y * c.penetration;
+      }
+
+      sim::Scalar vn = sim::dot(p.velocity, c.normal);
+      if (vn > 0) {
+        p.velocity -= c.normal * vn * (sim::Scalar{1} + wall.bounciness);
       }
     }
     p.grounded = grounded;

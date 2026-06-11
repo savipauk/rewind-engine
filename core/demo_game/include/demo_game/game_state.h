@@ -26,7 +26,7 @@ struct Player {
   sim::Scalar air_x_accel{0.2};
   sim::Scalar ground_x_accel{0.218};
 
-  sim::Scalar air_y_accel{0.2};
+  sim::Scalar air_y_accel{0.18};
   sim::Scalar weak_air_y_accel{0.06};
   sim::Scalar ground_y_accel{0.28};
   sim::Scalar available_air_y_accel{1.0};
@@ -34,7 +34,7 @@ struct Player {
 
   sim::Scalar horizontal_drag{0.96};
 
-  sim::Scalar max_available_air_accel{1.0};
+  sim::Scalar max_available_air_accel{2.0};
   sim::Scalar max_vertical_speed{6};
   sim::Scalar max_vertical_speed_down{15};
   sim::Scalar max_horizontal_speed{6};
@@ -43,11 +43,19 @@ struct Player {
 
 struct Wall {
   sim::Rect shape{{}, {}};
-  // sim::Scalar bounciness{1};
+  sim::Scalar bounciness{0};
+
   Wall() {};
+
   Wall(int x, int y, int width, int height) {
     shape.min = {x, y};
     shape.max = {x + width, y + height};
+  }
+
+  Wall(int x, int y, int width, int height, float bounce) {
+    shape.min = {x, y};
+    shape.max = {x + width, y + height};
+    bounciness = sim::Scalar{bounce};
   }
 };
 
