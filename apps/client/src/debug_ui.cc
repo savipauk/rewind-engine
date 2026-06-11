@@ -25,11 +25,14 @@ void draw_debug(demo_game::Player& p) {
   scalar_slider("max_vertical_speed_down", p.max_vertical_speed_down, 0.0f,
                 30.0f);
   scalar_slider("max_horizontal_speed", p.max_horizontal_speed, 0.0f, 20.0f);
+  scalar_slider("max_slope_angle", p.max_slope_angle, 0.0f, 2 * 3.14f);
 
   ImGui::Text("available_air_y_accel: %.2f",
               p.available_air_y_accel.to_double());
   ImGui::Text("velocity: (%.2f, %.2f)", p.velocity.x.to_double(),
               p.velocity.y.to_double());
+  ImGui::Text("grounded: %d", p.grounded);
+  ImGui::Text("hits_head: %d", p.hits_head);
 }
 
 void draw_debug(demo_game::Wall& wall) {

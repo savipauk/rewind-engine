@@ -70,4 +70,6 @@ struct Vec2 {
   Vec2& normalize();
 };
 
+Scalar dot(const Vec2& a, const Vec2& b);
+
 }  // namespace sim

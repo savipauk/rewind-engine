@@ -1,5 +1,6 @@
 #pragma once
 
+#include <numbers>
 #include <vector>
 
 #include "sim/shape.h"
@@ -37,6 +38,7 @@ struct Player {
   sim::Scalar max_vertical_speed{6};
   sim::Scalar max_vertical_speed_down{15};
   sim::Scalar max_horizontal_speed{6};
+  sim::Scalar max_slope_angle{30.0 * std::numbers::pi / 180.0};
 };
 
 struct Wall {
