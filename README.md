@@ -39,8 +39,11 @@ The project is organized around reusable engine modules first:
 Current bootstrap status:
 
 - Root CMake project and presets exist (`debug`, `release`)
-- `client` builds and runs a raylib + ImGui demo loop (rendering, input polling, fixed-tick stepping)
-- `server` builds and currently prints `server bootstrap`
+- `client` builds and runs a raylib + ImGui demo loop (rendering, input polling, fixed-tick stepping, snapshot save/load)
+- `server` builds, binds a UDP socket, and runs a headless fixed-tick loop (no packet handling yet)
+- `core/net` wraps a blocking Asio UDP socket (`net::Channel`); no packet format or reliability yet
+- Snapshot machinery exists: engine-generic `SnapshotWriter`/`SnapshotReader` over byte buffers, with `demo_game` owning the authoritative field-by-field serialization
+- Deterministic fixed-point `Scalar`/`Vec2` math with documented range limits (see `core/sim/include/sim/scalar.h`)
 - Core modules are scaffolded and partially implemented (`common`, `sim`, `net`, `replay`, `demo_game`)
 - Test coverage currently includes smoke and simulation collision tests
 
@@ -52,7 +55,7 @@ The current stack is:
 - CMake + Ninja
 - raylib for the client window, rendering, and input (vendored under `external/raylib`)
 - Dear ImGui for debug UI and metrics overlays (vendored under `external/imgui`)
-- standalone Asio for networking (planned integration)
+- standalone Asio for networking (wired into `core/net`, found via system install)
 - MessagePack or custom binary formats for replay/config serialization where appropriate (planned)
 
 Note: dependencies required by the current client build are already wired into CMake via vendored sources.
@@ -88,8 +91,10 @@ Run executables from a debug build:
 
 Current runtime behavior:
 
-- `client` opens the demo window and runs the fixed-tick simulation/render loop with a small ImGui debug panel
-- `server` currently prints `server bootstrap`
+- `client` opens the demo window and runs the fixed-tick simulation/render loop with a small ImGui debug panel; `R` writes a snapshot, `L` restores it
+- `server` binds UDP port 4000 and runs the authoritative fixed-tick loop with zeroed inputs (no client communication yet)
+
+Prerequisite for `core/net`: a system install of standalone Asio (e.g. `brew install asio`).
 
 ## Roadmap
 

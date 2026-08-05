@@ -15,11 +15,15 @@ Clone submodules after cloning the repository:
 git submodule update --init --recursive
 ```
 
+## System Dependencies
+
+- `Asio` (standalone) - networking transport; found via a system install
+  (e.g. Homebrew) in `core/net/CMakeLists.txt`, not vendored here
+
 ## Planned Additional Dependencies
 
 These are still expected, but are not yet wired into the build:
 
-- `Asio` - networking transport
 - `MessagePack` - replay/config serialization when appropriate
 
 ## Notes
