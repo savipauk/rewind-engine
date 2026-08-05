@@ -4,6 +4,15 @@
 
 namespace sim {
 
+// Fixed-point scale: 1 world unit == 1000 raw units (resolution 0.001).
+//
+// Range and precision assumptions:
+// - Raw storage is int64. Multiplication computes a.value * b.value before
+//   rescaling, so it overflows (UB) once |a * b| exceeds ~9.2e12 world
+//   units^2; keep multiplication operands below ~3.0e6 world units.
+// - Squared-distance helpers (Vec2::magnitude, collision) square raw
+//   components, limiting safe coordinates to roughly +/-2.1e6 world units.
+// - World/arena coordinates should stay well inside these bounds.
 inline constexpr std::int64_t kScalarScale = 1000;
 
 std::int64_t integer_sqrt_same_platform(std::int64_t value);
@@ -14,11 +23,13 @@ struct Scalar {
 
   Scalar() = default;
 
-  Scalar(float v) {
+  // Lossy float conversions are explicit so they stay visible at call
+  // sites; they belong at rendering/debug boundaries, not in step logic.
+  explicit Scalar(float v) {
     value = static_cast<std::int64_t>(v * kScalarScale);
   }
 
-  Scalar(double v) {
+  explicit Scalar(double v) {
     value = static_cast<std::int64_t>(v * kScalarScale);
   }
 
@@ -84,7 +95,7 @@ struct Scalar {
   }
 
   int to_int() const {
-    return static_cast<int>(value) / static_cast<int>(kScalarScale);
+    return static_cast<int>(value / kScalarScale);
   }
 
   float to_float() const {

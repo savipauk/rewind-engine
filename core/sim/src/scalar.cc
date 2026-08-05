@@ -10,9 +10,12 @@ std::int64_t integer_sqrt_same_platform(std::int64_t value) {
       static_cast<std::int64_t>(std::sqrt(static_cast<double>(value)));
 
   // Correct for float rounding (at most ±1 off for values <= 2^53)
-  // For values > 2^53, double loses precision so we may need a wider correction
-  while (x > 0 && x * x > value) --x;
-  while ((x + 1) * (x + 1) <= value) ++x;
+  // For values > 2^53, double loses precision so we may need a wider
+  // correction. Compare via division instead of squaring so the checks
+  // cannot overflow near INT64_MAX (x > value / x <=> x * x > value for
+  // positive integers).
+  while (x > 0 && x > value / x) --x;
+  while (x + 1 <= value / (x + 1)) ++x;
 
   return x;
 }

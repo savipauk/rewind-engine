@@ -1,7 +1,6 @@
 #include "demo_game/game_state.h"
 
 #include <algorithm>
-#include <cmath>
 
 #include "sim/collision.h"
 #include "sim/vec2.h"
@@ -11,8 +10,8 @@ namespace demo_game {
 Game make_initial_game(const sim::Vec2& player_start_position, int screen_width,
                        int screen_height) {
   Game game{};
-  game.screen_width = screen_width;
-  game.screen_height = screen_height;
+  game.arena_width = screen_width;
+  game.arena_height = screen_height;
   game.player.shape.position = player_start_position;
 
   int boundary_size = 16;
@@ -37,8 +36,8 @@ Game construct_serverside(const sim::Vec2& player_start_position) {
   const int arena_width = 1280;
   const int arena_height = 720;
 
-  game.screen_width = arena_width;
-  game.screen_height = arena_height;
+  game.arena_width = arena_width;
+  game.arena_height = arena_height;
   game.player.shape.position = player_start_position;
 
   int boundary_size = 16;
@@ -142,7 +141,7 @@ void step(Game& game, const PlayerInput& input) {
           grounded = true;
         }
 
-        if (c.normal.y > std::cos(p.max_slope_angle.to_double())) {
+        if (c.normal.y > p.min_ground_normal_y) {
           p.available_air_y_accel = p.max_available_air_accel;
         }
 

@@ -2,6 +2,8 @@
 
 namespace sim {
 
+// Squares raw components: overflows (UB) once |components| exceed roughly
+// +/-2.1e6 world units. See the range notes in scalar.h.
 Scalar Vec2::magnitude() const {
   const std::int64_t xx = x.value * x.value;
   const std::int64_t yy = y.value * y.value;

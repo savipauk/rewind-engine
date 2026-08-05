@@ -1,6 +1,5 @@
 #pragma once
 
-#include <numbers>
 #include <vector>
 
 #include "sim/shape.h"
@@ -38,7 +37,11 @@ struct Player {
   sim::Scalar max_vertical_speed{6};
   sim::Scalar max_vertical_speed_down{15};
   sim::Scalar max_horizontal_speed{6};
-  sim::Scalar max_slope_angle{30.0 * std::numbers::pi / 180.0};
+
+  // cos(30 deg max slope), stored directly so the deterministic step never
+  // calls libm trig. Ground contact restores air accel only when the
+  // contact normal.y exceeds this value.
+  sim::Scalar min_ground_normal_y{0.866};
 };
 
 struct Wall {
@@ -61,8 +64,8 @@ struct Wall {
 };
 
 struct Game {
-  int screen_width;
-  int screen_height;
+  int arena_width;
+  int arena_height;
   uint64_t last_wall_id{0};
 
   Player player{};
@@ -72,6 +75,7 @@ struct Game {
 Game make_initial_game(const sim::Vec2& player_start_position, int screen_width,
                        int screen_height);
 
+// Copies make_initial_game with a fixed arena size; keep the two in sync.
 Game construct_serverside(const sim::Vec2& player_start_position);
 
 void add_wall(Game& game, int x, int y, int width, int height, float bounce);

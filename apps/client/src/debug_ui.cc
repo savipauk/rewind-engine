@@ -25,7 +25,7 @@ void draw_debug(demo_game::Player& p) {
   scalar_slider("max_vertical_speed_down", p.max_vertical_speed_down, 0.0f,
                 30.0f);
   scalar_slider("max_horizontal_speed", p.max_horizontal_speed, 0.0f, 20.0f);
-  scalar_slider("max_slope_angle", p.max_slope_angle, 0.0f, 2 * 3.14f);
+  scalar_slider("min_ground_normal_y", p.min_ground_normal_y, 0.0f, 1.0f);
 
   ImGui::Text("available_air_y_accel: %.2f",
               p.available_air_y_accel.to_double());
