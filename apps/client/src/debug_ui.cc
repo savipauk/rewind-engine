@@ -36,7 +36,7 @@ void draw_debug(demo_game::Player& p) {
 }
 
 void draw_debug(demo_game::Wall& wall) {
-  (void)wall;
+  scalar_slider("bounciness", wall.bounciness, 0.0f, 1.0f);
 }
 
 void draw_debug_ui(demo_game::Game& game, sim::World& world) {
@@ -54,8 +54,11 @@ void draw_debug_ui(demo_game::Game& game, sim::World& world) {
 
   ImGui::Begin("Walls");
 
+  int wall_index = 0;
   for (auto& wall : game.walls) {
+    ImGui::PushID(wall_index++);
     draw_debug(wall);
+    ImGui::PopID();
   }
 
   ImGui::End();

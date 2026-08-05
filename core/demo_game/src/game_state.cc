@@ -57,6 +57,11 @@ Game construct_serverside(const sim::Vec2& player_start_position) {
   return game;
 }
 
+void add_wall(Game& game, int x, int y, int width, int height, float bounce) {
+  Wall& wall = game.walls.emplace_back(x, y, width, height, bounce);
+  wall.wall_id = ++game.last_wall_id;
+}
+
 void step(Game& game, const PlayerInput& input) {
   // Check if grounded
   // Check if hits ground

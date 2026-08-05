@@ -42,6 +42,7 @@ struct Player {
 };
 
 struct Wall {
+  uint64_t wall_id{0};
   sim::Rect shape{{}, {}};
   sim::Scalar bounciness{0};
 
@@ -62,6 +63,7 @@ struct Wall {
 struct Game {
   int screen_width;
   int screen_height;
+  uint64_t last_wall_id{0};
 
   Player player{};
   std::vector<Wall> walls;
@@ -71,6 +73,8 @@ Game make_initial_game(const sim::Vec2& player_start_position, int screen_width,
                        int screen_height);
 
 Game construct_serverside(const sim::Vec2& player_start_position);
+
+void add_wall(Game& game, int x, int y, int width, int height, float bounce);
 
 void step(Game& game, const PlayerInput& input);
 
